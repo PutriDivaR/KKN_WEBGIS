@@ -28,9 +28,9 @@
     <section class="relative h-[92vh] min-h-[560px] flex items-end overflow-hidden bg-green-950">
 
     <img
-        src="{{ asset('assets/wallpaper_beranda.jpg') }}"
+        src="{{ asset('assets/wallpaper_beranda.jpeg') }}"
         alt="Rumah Gadang Kampung Adat Sijunjung"
-        class="absolute inset-0 w-full h-full object-cover"
+        class="absolute inset-0 w-full h-full object-cover object-[center_10%] scale-105"
     >
 
         <div class="absolute inset-0 bg-gradient-to-t from-green-950/90 via-green-950/50 to-green-950/20"></div>

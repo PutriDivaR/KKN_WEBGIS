@@ -7,6 +7,8 @@ use App\Http\Controllers\User\MapController;
 use App\Http\Controllers\User\RumahController;
 use App\Http\Controllers\User\FasilitasController;
 use App\Http\Controllers\User\TentangController;
+use App\Http\Controllers\User\PerancanganController;
+
 
 use App\Http\Controllers\Admin\LoginController;
 
@@ -25,6 +27,10 @@ Route::get('/peta', [MapController::class, 'index'])->name('map');
 Route::get('/peta/data', [MapController::class, 'data'])->name('map.data');
 
 Route::get('/rumah/{slug}', [RumahController::class, 'show'])->name('rumah.show');
+
+Route::get('/perancangan', [PerancanganController::class, 'index'])->name('perancangan.index');
+
+Route::get('/perancangan/{slug}', [PerancanganController::class, 'show'])->name('perancangan.show');
 
 Route::get('/fasilitas', [FasilitasController::class, 'index'])->name('fasilitas.index');
 

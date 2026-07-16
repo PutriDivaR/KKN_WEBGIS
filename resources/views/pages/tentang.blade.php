@@ -141,7 +141,7 @@
                 <div class="overflow-hidden rounded-3xl shadow-sm">
 
                     {{-- GANTI DENGAN FOTO ASLI --}}
-                    <img src="{{ asset('assets/wallpaper_beranda.jpg') }}"
+                    <img src="{{ asset('assets/wallpaper_beranda.jpeg') }}"
                         class="w-full h-[330px] object-cover"  >
 
                 </div>

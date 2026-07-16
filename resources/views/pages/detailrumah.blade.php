@@ -115,7 +115,6 @@
                     $tabs = [
                         'informasi'  => ['label' => 'Informasi',  'icon' => 'info'],
                         'sejarah'    => ['label' => 'Sejarah',    'icon' => 'book'],
-                        'arsitektur' => ['label' => 'Arsitektur', 'icon' => 'column'],
                         'galeri'     => ['label' => 'Galeri',     'icon' => 'photo'],
                         'video'      => ['label' => 'Video',      'icon' => 'video'],
                     ];
@@ -167,11 +166,6 @@
             {{-- Tab: Sejarah --}}
             <div data-tab-panel="sejarah" class="tab-panel hidden p-6">
                 <p class="text-sm text-neutral-600 leading-relaxed">{{ $rumah['sejarah'] }}</p>
-            </div>
-
-            {{-- Tab: Arsitektur --}}
-            <div data-tab-panel="arsitektur" class="tab-panel hidden p-6">
-                <p class="text-sm text-neutral-600 leading-relaxed">{{ $rumah['arsitektur'] }}</p>
             </div>
 
             {{-- Tab: Galeri --}}
