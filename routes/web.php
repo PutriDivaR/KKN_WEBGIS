@@ -26,7 +26,7 @@ Route::get('/peta', [MapController::class, 'index'])->name('map');
 
 Route::get('/peta/data', [MapController::class, 'data'])->name('map.data');
 
-Route::get('/rumah/{slug}', [RumahController::class, 'show'])->name('rumah.show');
+Route::get('/rumah/{id}', [RumahController::class, 'show'])->name('rumah.show');
 
 Route::get('/perancangan', [PerancanganController::class, 'index'])->name('perancangan.index');
 
