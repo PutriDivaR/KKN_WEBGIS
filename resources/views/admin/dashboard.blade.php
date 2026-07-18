@@ -83,7 +83,7 @@
 					@endforeach
 				</div>
 
-				<a href="#" class="mt-2 inline-flex items-center justify-center w-full rounded-xl border border-[#d8e5d6] px-4 py-3 text-sm font-medium text-[#0b442a] hover:bg-[#f2f7f0]">
+				<a href="{{ route('admin.aktivitas.index') }}" class="mt-2 inline-flex items-center justify-center w-full rounded-xl border border-[#d8e5d6] px-4 py-3 text-sm font-medium text-[#0b442a] hover:bg-[#f2f7f0]">
 					Lihat Semua Aktivitas
 				</a>
 			</article>
@@ -103,7 +103,7 @@
 
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 				@foreach ($latestCards as $card)
-					<article class="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm hover:shadow-md transition-shadow">
+					<a href="{{ $card['route'] }}" class="group block overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-[#0b442a]/30">
 						<div class="relative h-40 overflow-hidden bg-[#edf2ec]">
 							<img
 								src="{{ $card['image'] }}"
@@ -117,12 +117,11 @@
 						<div class="p-4">
 							<h3 class="font-semibold text-[#132018] text-[15px]">{{ $card['name'] }}</h3>
 							<p class="mt-1 text-sm text-[#6f7f72]">{{ $card['meta'] }}</p>
-							<div class="mt-4 flex items-center justify-between text-sm">
-								<span class="inline-flex items-center rounded-full bg-[#e8f3e4] px-2.5 py-1 text-[11px] font-medium text-[#0b6a38]">TERKINI</span>
-								<a href="#" class="text-[#0b6a38] font-medium hover:underline">Detail Situs</a>
+							<div class="mt-4 flex items-center justify-start text-sm">
+								<span class="inline-flex items-center rounded-full bg-[#e8f3e4] px-2.5 py-1 text-[11px] font-medium text-[#0b6a38]">{{ ucfirst($card['type']) }}</span>
 							</div>
 						</div>
-					</article>
+					</a>
 				@endforeach
 			</div>
 		</section>

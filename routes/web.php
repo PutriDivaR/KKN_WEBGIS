@@ -13,8 +13,10 @@ use App\Http\Controllers\User\PerancanganController;
 use App\Http\Controllers\Admin\LoginController;
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\AdminAktivitasController;
 use App\Http\Controllers\Admin\AdminRumahController;
 use App\Http\Controllers\Admin\AdminFasilitasController;
+use App\Http\Controllers\Admin\AdminTentangController;
 
 /* Ubah aja menyesuikan file yek*/
 
@@ -26,7 +28,7 @@ Route::get('/peta', [MapController::class, 'index'])->name('map');
 
 Route::get('/peta/data', [MapController::class, 'data'])->name('map.data');
 
-Route::get('/rumah/{id}', [RumahController::class, 'show'])->name('rumah.show');
+Route::get('/rumah/{slug}', [RumahController::class, 'show'])->name('rumah.show');
 
 Route::get('/perancangan', [PerancanganController::class, 'index'])->name('perancangan.index');
 
@@ -63,6 +65,19 @@ Route::prefix('administrator')
 
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
+
+        Route::get('/profile', function () {
+            return view('admin.profile', [
+                'name' => session('admin_name', 'Admin Kampung Adat'),
+                'email' => session('admin_email', 'admin@kampungadat.id'),
+            ]);
+        })->name('profile');
+
+        Route::get('/aktivitas', [AdminAktivitasController::class, 'index'])
+            ->name('aktivitas.index');
+
+        Route::get('/detail-rumah-gadang', [AdminTentangController::class, 'index'])
+            ->name('tentang.index');
 
         Route::resource('rumah', AdminRumahController::class);
 

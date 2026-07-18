@@ -31,9 +31,9 @@ class DashboardController extends Controller
 		];
 
 		$latestCards = [
-			['name' => 'Rumah Gadang Dt. Sinaro', 'meta' => 'Piliang · Terdaftar 28 Mei 2024', 'status' => 'TERKINI', 'image' => asset('assets/wallpaper_beranda.jpeg'), 'image_position' => 'center 20%'],
-			['name' => 'Balai Adat Sijunjung', 'meta' => 'Fasilitas · Terdaftar 28 Mei 2024', 'status' => 'TERKINI', 'image' => asset('assets/siteplan(dummy).png'), 'image_position' => 'center center'],
-			['name' => 'Sekretariat Adat', 'meta' => 'Gubernur · Terdaftar 27 Mei 2024', 'status' => 'TERKINI', 'image' => asset('assets/wallpaper_beranda.jpeg'), 'image_position' => 'center 55%'],
+			['name' => 'Rumah Gadang Dt. Sinaro', 'meta' => 'Piliang · Terdaftar 28 Mei 2024', 'status' => 'TERKINI', 'image' => asset('assets/wallpaper_beranda.jpeg'), 'image_position' => 'center 20%', 'route' => route('admin.rumah.index'), 'type' => 'rumah'],
+			['name' => 'Balai Adat Sijunjung', 'meta' => 'Fasilitas · Terdaftar 28 Mei 2024', 'status' => 'TERKINI', 'image' => asset('assets/siteplan(dummy).png'), 'image_position' => 'center center', 'route' => route('admin.fasilitas.index'), 'type' => 'fasilitas'],
+			['name' => 'Sekretariat Adat', 'meta' => 'Gubernur · Terdaftar 27 Mei 2024', 'status' => 'TERKINI', 'image' => asset('assets/wallpaper_beranda.jpeg'), 'image_position' => 'center 55%', 'route' => route('admin.fasilitas.index'), 'type' => 'fasilitas'],
 		];
 
 		return view('admin.dashboard', compact('stats', 'mapSummary', 'activities', 'latestCards'));
