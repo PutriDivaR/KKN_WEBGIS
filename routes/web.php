@@ -40,6 +40,9 @@ Route::get('/tentang', [TentangController::class, 'index'])->name('tentang');
 
 /* LOGIN SI ADMIN*/
 
+Route::get('/login', fn () => redirect()->route('admin.login'))
+    ->name('login');
+
 Route::get('/administrator/login', [LoginController::class, 'showLoginForm'])
     ->name('admin.login');
 
@@ -51,8 +54,10 @@ Route::post('/administrator/logout', [LoginController::class, 'logout'])
 
 /* ADMIN PANEL */
 
+Route::redirect('/administrator', '/administrator/dashboard');
+
 Route::prefix('administrator')
-    ->middleware('auth')
+    ->middleware('admin.session')
     ->name('admin.')
     ->group(function () {
 
