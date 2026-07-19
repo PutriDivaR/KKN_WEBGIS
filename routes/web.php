@@ -82,4 +82,8 @@ Route::prefix('administrator')
         Route::resource('rumah', AdminRumahController::class);
 
         Route::resource('fasilitas', AdminFasilitasController::class);
+
+        // NOTE: route tambahan untuk hapus 1 foto dari galeri fasilitas (dipakai di halaman edit)
+        Route::delete('fasilitas-media/{media}', [AdminFasilitasController::class, 'destroyMedia'])
+            ->name('fasilitas.media.destroy');
 });
