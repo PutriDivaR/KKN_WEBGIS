@@ -23,8 +23,8 @@ class BerandaController extends Controller
                 'label' => 'Fasilitas'
             ],
             [
-                'value' => 1,
-                'label' => 'Kampung Adat'
+                'value' => 2,
+                'label' => 'Jorong'
             ],
         ];
 

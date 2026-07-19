@@ -3,13 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MediaFasilitas extends Model
 {
     protected $table = 'media_fasilitas';
     protected $primaryKey = 'id_medfas';
     public $timestamps = false;
+
+    /**
+     * Folder fisik penyimpanan file, RELATIF terhadap public/.
+     * Kolom `file` di database hanya berisi nama file (mis. "xxxx-uuid.jpg"),
+     * BUKAN path lengkap — konstanta ini yang melengkapinya jadi path/URL utuh.
+     * Harus sama persis dengan yang dipakai di
+     * AdminFasilitasController::storePhoto() (public_path(self::PUBLIC_FOLDER)).
+     */
+    public const PUBLIC_FOLDER = 'assets/fasilitas';
 
     protected $fillable = [
         'id_fasilitas',
@@ -24,34 +32,28 @@ class MediaFasilitas extends Model
     }
 
     /**
-     * URL publik ke file media ini.
-     *
-     * Asumsi: kolom `file` berisi path relatif hasil upload lewat
-     * Storage::disk('public') (mis. "fasilitas/nama-file.jpg"), dan
-     * symlink storage sudah dibuat lewat `php artisan storage:link`.
-     *
-     * Kalau ternyata kolom `file` sudah berisi URL penuh (http/https)
-     * atau kamu simpan file-nya manual langsung di folder public/,
-     * accessor ini tetap aman menyesuaikan.
+     * URL publik untuk ditampilkan di <img>/<video> (mis. public/assets/fasilitas/xxxx.jpg
+     * -> https://domain.test/assets/fasilitas/xxxx.jpg).
      */
     public function getUrlAttribute(): string
     {
-        $file = $this->file;
-
-        if (! $file) {
+        if (! $this->file) {
             return '';
         }
 
-        if (str_starts_with($file, 'http://') || str_starts_with($file, 'https://')) {
-            return $file;
+        if (str_starts_with($this->file, 'http://') || str_starts_with($this->file, 'https://')) {
+            return $this->file;
         }
 
-        // Sudah berupa path public/ langsung (mis. "assets/fasilitas/...")
-        if (str_starts_with($file, 'assets/') || str_starts_with($file, 'storage/')) {
-            return asset(ltrim($file, '/'));
-        }
+        return asset(self::PUBLIC_FOLDER . '/' . ltrim($this->file, '/'));
+    }
 
-        // Default: anggap file disimpan via disk 'public' (storage/app/public/...)
-        return asset('storage/' . ltrim($file, '/'));
+    /**
+     * Path fisik file di disk server — dipakai saat menghapus file lewat
+     * File::delete() di AdminFasilitasController::deletePhotoFile().
+     */
+    public function getAbsolutePathAttribute(): string
+    {
+        return public_path(self::PUBLIC_FOLDER . '/' . ltrim($this->file, '/'));
     }
 }

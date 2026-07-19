@@ -11,10 +11,4 @@ class Jorong extends Model
     public $timestamps = false;
 
     protected $fillable = ['nama_jorong'];
-
-    public function fasilitas(): HasMany
-    {
-        return $this->hasMany(FasilitasWisata::class, 'id_jorong', 'id_jorong');
-    }
 }
-

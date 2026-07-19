@@ -178,18 +178,15 @@
                     <i class="bi bi-camera text-sm"></i>
                 </label>
 
-                {{-- Tombol hapus foto TERSIMPAN — langsung menghapus dari database & folder public/assets/fasilitas --}}
+                {{-- Tombol hapus foto TERSIMPAN — tombol biasa (BUKAN <form>), karena
+                     form ini berada di dalam <form id="fasilitas-form">. Form hapus
+                     yang sesungguhnya ada di LUAR form utama, lihat setelah tag
+                     </form> di bawah, supaya tidak ada <form> bersarang. --}}
                 @if ($existingPhoto)
-                    <form action="{{ route('admin.fasilitas.media.destroy', $existingPhoto->id_medfas) }}" method="POST"
-                          onsubmit="return confirm('Hapus foto ini? Foto akan langsung terhapus dari server.');"
-                          id="delete-saved-photo-form" class="absolute top-2 right-2">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" title="Hapus foto"
-                                class="h-7 w-7 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow">
-                            <i class="bi bi-x-lg text-xs"></i>
-                        </button>
-                    </form>
+                    <button type="button" id="delete-saved-photo-btn" title="Hapus foto"
+                            class="absolute top-2 right-2 h-7 w-7 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow">
+                        <i class="bi bi-x-lg text-xs"></i>
+                    </button>
                 @endif
 
                 {{-- Tombol batal untuk foto BARU yang belum disimpan (hanya reset pilihan, tidak menghapus apapun di server) --}}
@@ -223,6 +220,20 @@
     </div>
 </form>
 
+{{-- ===================== FORM TERPISAH: HAPUS FOTO TERSIMPAN ===================== --}}
+{{-- Sengaja dipisah dari form utama di atas — <form> tidak boleh bersarang
+     di dalam <form> lain. Sebelumnya form ini ditulis nested, dan itu bikin
+     browser menutup form utama lebih awal (tepat di </form> milik form ini),
+     sehingga tombol "Simpan Fasilitas" ikut "terlempar" keluar dari form
+     utama dan tidak berfungsi sama sekali saat diklik. --}}
+@if ($isEdit && $existingPhoto)
+    <form action="{{ route('admin.fasilitas.media.destroy', $existingPhoto->id_medfas) }}" method="POST"
+          id="delete-saved-photo-form" class="hidden">
+        @csrf
+        @method('DELETE')
+    </form>
+@endif
+
 {{-- ===================== MODAL PETA PILIH TITIK KOORDINAT ===================== --}}
 <div id="map-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden">
@@ -255,8 +266,19 @@
     const newImg = document.getElementById('new-photo-img');
     const placeholder = document.getElementById('empty-placeholder');
     const btnReplace = document.getElementById('btn-replace');
+    const deleteSavedBtn = document.getElementById('delete-saved-photo-btn');
     const deleteSavedForm = document.getElementById('delete-saved-photo-form');
     const cancelNewBtn = document.getElementById('cancel-new-photo');
+
+    // Tombol hapus foto tersimpan men-submit form tersembunyi yang berada
+    // di luar form utama (lihat markup setelah </form> di atas).
+    if (deleteSavedBtn && deleteSavedForm) {
+        deleteSavedBtn.addEventListener('click', function () {
+            if (confirm('Hapus foto ini? Foto akan langsung terhapus dari server.')) {
+                deleteSavedForm.submit();
+            }
+        });
+    }
 
     fotoInput.addEventListener('change', function () {
         const file = fotoInput.files[0];
@@ -269,7 +291,7 @@
         savedImg.classList.add('hidden');
         placeholder.classList.add('hidden');
         btnReplace.classList.add('hidden');
-        if (deleteSavedForm) deleteSavedForm.classList.add('hidden');
+        if (deleteSavedBtn) deleteSavedBtn.classList.add('hidden');
 
         cancelNewBtn.classList.remove('hidden');
     });
@@ -284,7 +306,7 @@
         if (hasSaved) {
             savedImg.classList.remove('hidden');
             btnReplace.classList.remove('hidden');
-            if (deleteSavedForm) deleteSavedForm.classList.remove('hidden');
+            if (deleteSavedBtn) deleteSavedBtn.classList.remove('hidden');
         } else {
             placeholder.classList.remove('hidden');
         }
