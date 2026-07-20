@@ -3,47 +3,31 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Budaya;
+use Illuminate\View\View;
 
 class TentangController extends Controller
 {
-    public function index()
+    /**
+     * GET /tentang
+     *
+     * Tab "Budaya" sudah terhubung ke tabel `budaya` (id_budaya, nama, deskripsi).
+     * Tab "Tentang Kampung Adat" masih dummy — tabel `kampung_adat` di DB masih
+     * kosong, jadi belum ada yang bisa di-query dari sana.
+     * Tab "Dokumentasi Kampung Adat" sengaja full dummy/placeholder — isinya
+     */
+    public function index(): View
     {
         $tentang = [
-
-            'judul_sejarah' => 'Sejarah Kampung Adat Sijunjung',
-
-            'isi_sejarah' =>
-                'Kampung Adat Sijunjung telah berdiri sejak abad ke-19 dan menjadi salah satu kawasan permukiman adat Minangkabau yang masih mempertahankan nilai-nilai tradisional hingga saat ini.',
-
-            'judul_budaya' => 'Nilai Budaya',
-
-            'isi_budaya' =>
-                'Sistem kekerabatan matrilineal, arsitektur rumah gadang, dan musyawarah adat masih dijalankan secara turun-temurun oleh masyarakat setempat.',
-
-            'struktur' => [
-
-                [
-                    'nama' => 'Datuk Penghulu',
-                    'peran' => 'Pemimpin adat tertinggi'
-                ],
-
-                [
-                    'nama' => 'Bundo Kanduang',
-                    'peran' => 'Pemangku adat perempuan'
-                ],
-
-                [
-                    'nama' => 'Malin',
-                    'peran' => 'Pemuka agama kampung'
-                ],
-
-            ]
-
+            'isi_sejarah' => 'Kampung Adat Sijunjung merupakan kawasan permukiman tradisional yang masih terjaga keaslian budaya, arsitektur, dan nilai-nilai masyarakat Minangkabau.',
+            'paragraf_dua' => 'Kawasan ini telah menjadi bagian penting dari sejarah panjang peradaban di Kabupaten Sijunjung dan menjadi identitas budaya yang diwariskan secara turun-temurun.',
+            'lokasi' => 'Muaro Sijunjung, Kabupaten Sijunjung, Sumatera Barat',
+            'status_kawasan' => 'Kawasan Cagar Budaya',
+            'masyarakat' => 'Suku Melayu, Bodi, Piliang, Tobo, dan lainnya',
         ];
 
-        return view(
-            'pages.tentang',
-            compact('tentang')
-        );
+        $budayaList = Budaya::orderBy('nama')->get();
+
+        return view('pages.tentang', compact('tentang', 'budayaList'));
     }
 }

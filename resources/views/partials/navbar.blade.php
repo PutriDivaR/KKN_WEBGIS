@@ -1,7 +1,7 @@
 
 
 
-<header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-black/5">
+<header class="sticky top-0 z-[9999] bg-white shadow-sm">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
 
         {{-- Logo --}}

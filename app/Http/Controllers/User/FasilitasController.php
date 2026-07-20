@@ -3,58 +3,44 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\FasilitasWisata;
+use Illuminate\Support\Str;
 
 class FasilitasController extends Controller
 {
     public function index()
     {
-        $fasilitas = [
+        $fasilitas = FasilitasWisata::with(['media', 'jorong'])
+            ->orderBy('nama')
+            ->get()
+            ->map(function (FasilitasWisata $item) {
+                // Foto lebih diutamakan tampil duluan di galeri modal
+                $media = $item->media
+                    ->sortBy(fn ($m) => $m->jenis_media === 'foto' ? 0 : 1)
+                    ->values()
+                    ->map(fn ($m) => [
+                        'id'    => $m->id_medfas,
+                        'nama'  => $m->nama_file ?: $m->file,
+                        'jenis' => $m->jenis_media,
+                        'url'   => $m->url,
+                    ]);
 
-            [
-                'nama' => 'Masjid Kampung',
-                'kategori' => 'Ibadah',
-                'deskripsi' => 'Tempat ibadah utama masyarakat Kampung Adat Sijunjung.',
-                'gambar' => '',
-                'warna' => 'green',
-            ],
+                $thumbnail = optional($media->firstWhere('jenis', 'foto'))['url'] ?? null;
 
-            [
-                'nama' => 'Balai Adat',
-                'kategori' => 'Budaya',
-                'deskripsi' => 'Tempat penyelenggaraan musyawarah adat dan kegiatan budaya.',
-                'gambar' => '',
-                'warna' => 'orange',
-            ],
+                return [
+                    'id'         => $item->id_fasilitas,
+                    'nama'       => $item->nama,
+                    'kategori'   => $item->kategori ?: 'Umum',
+                    'jorong'     => optional($item->jorong)->nama_jorong,
+                    'deskripsi'  => $item->deskripsi,
+                    'ringkasan'  => $item->deskripsi ? Str::limit($item->deskripsi, 110) : null,
+                    'latitude'   => $item->latitude,
+                    'longitude'  => $item->longitude,
+                    'thumbnail'  => $thumbnail,
+                    'media'      => $media,
+                ];
+            });
 
-            [
-                'nama' => 'Sekretariat Adat',
-                'kategori' => 'Administrasi',
-                'deskripsi' => 'Pusat administrasi dan pengelolaan kawasan Kampung Adat.',
-                'gambar' => '',
-                'warna' => 'blue',
-            ],
-
-            [
-                'nama' => 'Balai Nikah',
-                'kategori' => 'Pelayanan',
-                'deskripsi' => 'Tempat pelaksanaan akad nikah dan kegiatan adat lainnya.',
-                'gambar' => '',
-                'warna' => 'red',
-            ],
-
-            [
-                'nama' => 'Lapangan',
-                'kategori' => 'Umum',
-                'deskripsi' => 'Digunakan untuk berbagai aktivitas masyarakat dan acara adat.',
-                'gambar' => '',
-                'warna' => 'purple',
-            ],
-
-        ];
-
-        return view(
-            'pages.fasilitas',
-            compact('fasilitas')
-        );
+        return view('pages.fasilitas', compact('fasilitas'));
     }
 }

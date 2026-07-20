@@ -181,8 +181,46 @@
 
             {{-- Tab: Sejarah --}}
             <div data-tab-panel="sejarah" class="tab-panel hidden p-6">
-                <p class="text-sm text-neutral-600 leading-relaxed">{{ $rumah->sejarah_teks }}</p>
+                @php
+                    $sejarahRaw = trim($rumah->sejarah_teks);
+
+                    // Kalau admin sudah input per-paragraf (ada baris kosong), pakai itu.
+                    $paragraphs = array_filter(array_map('trim', preg_split('/\r\n\r\n|\n\n/', $sejarahRaw)));
+
+                    // Kalau ternyata cuma satu paragraf raksasa tanpa baris kosong sama
+                    // sekali, pecah otomatis tiap ~3 kalimat biar tetap enak dibaca.
+                    if (count($paragraphs) <= 1) {
+                        $sentences = preg_split('/(?<=[.!?])\s+(?=[A-Z0-9])/', $sejarahRaw) ?: [$sejarahRaw];
+                        $paragraphs = array_map(fn ($chunk) => implode(' ', $chunk), array_chunk($sentences, 3));
+                    }
+                @endphp
+
+                <div class="relative">
+                    <div
+                        id="sejarah-content"
+                        class="space-y-4 text-sm text-neutral-600 leading-relaxed [text-align:justify] max-h-[340px] overflow-hidden transition-[max-height] duration-500 ease-in-out"
+                        data-expanded="false"
+                    >
+                        @foreach ($paragraphs as $p)
+                            <p>{{ $p }}</p>
+                        @endforeach
+                    </div>
+
+                    <div id="sejarah-fade" class="hidden absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                </div>
+
+                <button
+                    id="sejarah-toggle"
+                    type="button"
+                    class="hidden mt-3 items-center gap-1 text-sm font-medium text-green-700 hover:underline"
+                >
+                    <span id="sejarah-toggle-label">Baca Selengkapnya</span>
+                    <svg id="sejarah-toggle-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </button>
             </div>
+        
 
             {{-- Tab: Galeri --}}
             <div data-tab-panel="galeri" class="tab-panel hidden p-6">
@@ -240,7 +278,61 @@
             initLokasiMap();
             setTimeout(() => window.lokasiMap && window.lokasiMap.invalidateSize(), 50);
         }
+
+        if (key === 'sejarah') {
+            checkSejarahOverflow();
+        }
     }
+
+    // --- Sejarah: auto "Baca Selengkapnya" kalau teksnya panjang ---
+    function checkSejarahOverflow() {
+        const content = document.getElementById('sejarah-content');
+        const fade = document.getElementById('sejarah-fade');
+        const toggle = document.getElementById('sejarah-toggle');
+        if (!content || !fade || !toggle) return;
+
+        if (content.dataset.expanded !== 'true') {
+            content.style.maxHeight = '340px';
+        }
+
+        requestAnimationFrame(() => {
+            const isOverflowing = content.scrollHeight > content.clientHeight + 4;
+
+            if (isOverflowing) {
+                toggle.classList.remove('hidden');
+                toggle.classList.add('inline-flex');
+                fade.classList.toggle('hidden', content.dataset.expanded === 'true');
+            } else {
+                toggle.classList.add('hidden');
+                toggle.classList.remove('inline-flex');
+                fade.classList.add('hidden');
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('sejarah-toggle')?.addEventListener('click', function () {
+            const content = document.getElementById('sejarah-content');
+            const fade = document.getElementById('sejarah-fade');
+            const label = document.getElementById('sejarah-toggle-label');
+            const icon = document.getElementById('sejarah-toggle-icon');
+            const expanded = content.dataset.expanded === 'true';
+
+            if (expanded) {
+                content.style.maxHeight = '340px';
+                content.dataset.expanded = 'false';
+                fade.classList.remove('hidden');
+                label.textContent = 'Baca Selengkapnya';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                content.dataset.expanded = 'true';
+                fade.classList.add('hidden');
+                label.textContent = 'Tampilkan Lebih Sedikit';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        });
+    });
 </script>
 
 @if ($rumah->has_lokasi)
