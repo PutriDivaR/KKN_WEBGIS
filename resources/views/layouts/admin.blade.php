@@ -34,10 +34,18 @@
 					</div>
 
 					<div class="flex items-center gap-3">
-						<label class="hidden md:flex items-center gap-2 w-72 h-10 px-4 rounded-full bg-[#edf3ea] text-[#6d7f72] border border-transparent focus-within:border-[#b8c7b7]">
-							<i class="bi bi-search"></i>
-							<input type="search" placeholder="Cari data heritage..." class="w-full bg-transparent outline-none text-sm placeholder:text-[#8b9a8f]">
-						</label>
+						<form method="GET" action="{{ route('admin.dashboard') }}" class="hidden md:block">
+							<label class="flex items-center gap-2 w-72 h-10 px-4 rounded-full bg-[#edf3ea] text-[#6d7f72] border border-transparent focus-within:border-[#b8c7b7]">
+								<i class="bi bi-search"></i>
+								<input
+									type="search"
+									name="search"
+									value="{{ request('search') }}"
+									placeholder="Cari data heritage..."
+									class="w-full bg-transparent outline-none text-sm placeholder:text-[#8b9a8f]"
+								>
+							</label>
+						</form>
 						<a href="{{ route('admin.profile') }}" class="w-10 h-10 rounded-full overflow-hidden border border-[#d9e3d8] bg-[#d8e8d2] flex items-center justify-center text-[#2f5a36] font-semibold hover:ring-2 hover:ring-[#c5d9c0] transition" aria-label="Buka profil admin">
 							AD
 						</a>

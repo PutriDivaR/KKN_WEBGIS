@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-	public function index(): View
+	public function index(Request $request): View
 	{
+		$search = trim((string) $request->query('search', ''));
+		$searchLower = mb_strtolower($search);
+
 		$stats = [
 			['label' => 'Total Rumah Adat', 'value' => 76, 'badge' => '+2.4%', 'icon' => 'bi-house-door'],
 			['label' => 'Masih Dihuni', 'value' => 58, 'badge' => 'Dihuni', 'icon' => 'bi-people'],
@@ -36,6 +40,20 @@ class DashboardController extends Controller
 			['name' => 'Sekretariat Adat', 'meta' => 'Gubernur · Terdaftar 27 Mei 2024', 'status' => 'TERKINI', 'image' => asset('assets/wallpaper_beranda.jpeg'), 'image_position' => 'center 55%', 'route' => route('admin.fasilitas.index'), 'type' => 'fasilitas'],
 		];
 
-		return view('admin.dashboard', compact('stats', 'mapSummary', 'activities', 'latestCards'));
+		if ($search !== '') {
+			$latestCards = array_values(array_filter($latestCards, function (array $card) use ($searchLower): bool {
+				$haystack = mb_strtolower($card['name'] . ' ' . $card['meta'] . ' ' . $card['type']);
+
+				return str_contains($haystack, $searchLower);
+			}));
+
+			$activities = array_values(array_filter($activities, function (array $activity) use ($searchLower): bool {
+				$haystack = mb_strtolower($activity['title'] . ' ' . $activity['time']);
+
+				return str_contains($haystack, $searchLower);
+			}));
+		}
+
+		return view('admin.dashboard', compact('stats', 'mapSummary', 'activities', 'latestCards', 'search'));
 	}
 }

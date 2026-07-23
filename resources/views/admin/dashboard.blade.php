@@ -6,6 +6,18 @@
 
 @section('content')
 	<div class="space-y-6">
+		@if (!empty($search))
+			<div class="rounded-2xl border border-[#d7e1d6] bg-white px-4 py-3 text-sm text-[#4d6150] shadow-sm">
+				Hasil pencarian untuk: <span class="font-semibold text-[#132018]">{{ $search }}</span>
+			</div>
+		@endif
+
+		@if ($latestCards === [] && $activities === [])
+			<div class="rounded-2xl border border-dashed border-[#d7e1d6] bg-white px-4 py-8 text-center text-[#6f7f72] shadow-sm">
+				Tidak ada data yang cocok dengan pencarian ini.
+			</div>
+		@endif
+
 		<section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
 			@foreach ($stats as $stat)
 				<article class="rounded-2xl border border-black/5 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
@@ -70,7 +82,7 @@
 				</div>
 
 				<div class="space-y-0">
-					@foreach ($activities as $activity)
+					@forelse ($activities as $activity)
 						<div class="flex gap-3 pb-4 {{ $loop->last ? '' : 'border-b border-black/5 mb-4' }}">
 							<div class="mt-0.5 w-9 h-9 rounded-full bg-[#e8f3e4] text-[#0b6a38] flex items-center justify-center shrink-0">
 								<i class="bi {{ $activity['icon'] }}"></i>
@@ -80,7 +92,9 @@
 								<p class="mt-1 text-xs text-[#6f7f72]">{{ $activity['time'] }}</p>
 							</div>
 						</div>
-					@endforeach
+					@empty
+						<p class="text-sm text-[#6f7f72]">Tidak ada aktivitas yang cocok.</p>
+					@endforelse
 				</div>
 
 				<a href="{{ route('admin.aktivitas.index') }}" class="mt-2 inline-flex items-center justify-center w-full rounded-xl border border-[#d8e5d6] px-4 py-3 text-sm font-medium text-[#0b442a] hover:bg-[#f2f7f0]">
@@ -101,8 +115,8 @@
 				</div>
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-				@foreach ($latestCards as $card)
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					@forelse ($latestCards as $card)
 					<a href="{{ $card['route'] }}" class="group block overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-[#0b442a]/30">
 						<div class="relative h-40 overflow-hidden bg-[#edf2ec]">
 							<img
@@ -122,7 +136,11 @@
 							</div>
 						</div>
 					</a>
-				@endforeach
+					@empty
+						<div class="col-span-full rounded-2xl border border-dashed border-[#d7e1d6] bg-white p-8 text-center text-[#6f7f72]">
+							Tidak ada data terbaru yang cocok.
+						</div>
+					@endforelse
 			</div>
 		</section>
 	</div>
