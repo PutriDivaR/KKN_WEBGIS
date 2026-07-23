@@ -82,7 +82,8 @@
 					<p class="text-sm font-semibold text-[#132018]">Media Utama</p>
 					@if ($video)
 						<div class="mt-4 overflow-hidden rounded-2xl border border-[#d7e1d6] bg-[#f7faf5]">
-							<video controls class="h-56 w-full object-cover" src="{{ asset('storage/' . $video->file) }}"></video>
+							<video controls class="h-56 w-full object-cover">
+    							<source src="{{ asset($video->file) }}" type="video/mp4"> Browser tidak mendukung video.</video>
 						</div>
 						<p class="mt-3 text-sm text-[#6f7f72]">{{ $video->nama_file }}</p>
 					@else
@@ -107,7 +108,7 @@
 				@forelse ($gallery as $photo)
 					<figure class="overflow-hidden rounded-2xl border border-[#d7e1d6] bg-[#fbfcfa] shadow-sm">
 						<div class="h-44 bg-[#eef2ec]">
-							<img src="{{ asset('storage/' . $photo->file) }}" alt="{{ $photo->nama_file }}" class="h-full w-full object-cover">
+							<img src="{{ asset($photo->file) }}" alt="{{ $photo->nama_file }}" class="h-full w-full object-cover">	
 						</div>
 						<figcaption class="p-4">
 							<p class="text-sm font-semibold text-[#132018] truncate">{{ $photo->nama_file }}</p>
