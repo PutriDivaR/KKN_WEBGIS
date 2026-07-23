@@ -23,6 +23,14 @@
             'photo' => 'M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 6.75h18M3 6.75A2.25 2.25 0 015.25 4.5h13.5A2.25 2.25 0 0121 6.75m-18 0v10.5A2.25 2.25 0 005.25 19.5h13.5A2.25 2.25 0 0021 17.25V6.75',
             'video' => 'M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z',
         ];
+
+        // Urutkan foto berdasarkan id_medfas (urutan upload), bukan urutan
+        // acak dari relasi — supaya foto pertama yang diupload SELALU jadi
+        // foto utama & tampil paling awal di galeri, walau data lama di DB
+        // urutannya berantakan.
+        $fotoSorted = $rumah->media->where('jenis_media', 'foto')->sortBy('id_medfas')->values();
+        $fotoUtamaItem = $fotoSorted->first();
+        $fotoUtamaUrl = $fotoUtamaItem ? asset('storage/' . $fotoUtamaItem->file) : null;
     @endphp
 
     <section class="max-w-6xl mx-auto px-6 lg:px-8 py-8">
@@ -39,15 +47,21 @@
 
             {{-- Kalau belum ada foto (media_rumah kosong), tampilkan placeholder rapi, bukan gambar rusak --}}
             <div class="rounded-2xl overflow-hidden h-72 lg:h-80 bg-green-900/5 border border-dashed border-green-900/20 relative">
-                @if ($rumah->foto_utama)
-                    <img
-                        src="{{ $rumah->foto_utama }}"
-                        alt="{{ $rumah->nama_tampil }}"
-                        class="w-full h-full object-cover"
-                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                @if ($fotoUtamaUrl)
+                    <button
+                        type="button"
+                        onclick="openImageModal('{{ $fotoUtamaUrl }}', '{{ $rumah->nama_tampil }}')"
+                        class="w-full h-full block cursor-zoom-in"
                     >
+                        <img
+                            src="{{ $fotoUtamaUrl }}"
+                            alt="{{ $rumah->nama_tampil }}"
+                            class="w-full h-full object-cover"
+                            onerror="this.closest('button').style.display='none'; this.closest('div').querySelector('[data-empty-photo]').style.display='flex';"
+                        >
+                    </button>
                 @endif
-                <div class="{{ $rumah->foto_utama ? 'hidden' : 'flex' }} absolute inset-0 items-center justify-center text-center px-6">
+                <div data-empty-photo class="{{ $fotoUtamaUrl ? 'hidden' : 'flex' }} absolute inset-0 items-center justify-center text-center px-6">
                     <p class="text-sm text-neutral-400">Belum ada foto untuk rumah ini</p>
                 </div>
             </div>
@@ -224,17 +238,22 @@
 
             {{-- Tab: Galeri --}}
             <div data-tab-panel="galeri" class="tab-panel hidden p-6">
-                @if ($rumah->galeri_foto->isNotEmpty())
+                @if ($fotoSorted->isNotEmpty())
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        @foreach ($rumah->galeri_foto as $foto)
-                            <div class="h-28 rounded-lg bg-green-900/5 border border-neutral-100 overflow-hidden">
+                        @foreach ($fotoSorted as $foto)
+                            @php $fotoUrl = asset('storage/' . $foto->file); @endphp
+                            <button
+                                type="button"
+                                onclick="openImageModal('{{ $fotoUrl }}', '{{ $foto->nama_file ?? $rumah->nama_tampil }}')"
+                                class="h-28 rounded-lg bg-green-900/5 border border-neutral-100 overflow-hidden cursor-zoom-in"
+                            >
                                 <img
-                                    src="{{ asset('storage/' . $foto->file) }}"
+                                    src="{{ $fotoUrl }}"
                                     alt="{{ $foto->nama_file ?? $rumah->nama_tampil }}"
                                     class="w-full h-full object-cover"
-                                    onerror="this.parentElement.style.display='none'"
+                                    onerror="this.closest('button').style.display='none'"
                                 >
-                            </div>
+                            </button>
                         @endforeach
                     </div>
                 @else
@@ -257,10 +276,68 @@
         </div>
     </section>
 
+    {{-- ============ MODAL POPUP GAMBAR ============ --}}
+    <div
+        id="imageModal"
+        class="opacity-0 pointer-events-none fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300 ease-in-out"
+        onclick="closeImageModalBackdrop(event)"
+    >
+        <div id="modalContainer" class="relative max-w-4xl w-full scale-95 transition-all duration-300 ease-in-out">
+            <button
+                type="button"
+                onclick="closeImageModal()"
+                class="absolute -top-10 right-0 text-white/80 hover:text-white text-sm flex items-center gap-1 transition-colors cursor-pointer"
+                aria-label="Tutup"
+            >
+                Tutup
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <img id="modalImage" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-xl bg-black border border-white/10 shadow-2xl">
+            <p id="modalCaption" class="mt-3 text-center text-white/95 font-medium text-sm drop-shadow-md"></p>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
 <script>
+    // --- Modal popup gambar (dipakai galeri & foto utama) ---
+    function openImageModal(src, caption) {
+        const modal = document.getElementById('imageModal');
+        const container = document.getElementById('modalContainer');
+        const img = document.getElementById('modalImage');
+        const cap = document.getElementById('modalCaption');
+
+        img.src = src;
+        img.alt = caption || '';
+        cap.textContent = caption || '';
+
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        requestAnimationFrame(() => container.classList.remove('scale-95'));
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        const container = document.getElementById('modalContainer');
+
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        container.classList.add('scale-95');
+        document.body.style.overflow = '';
+    }
+
+    function closeImageModalBackdrop(event) {
+        if (event.target.id === 'imageModal') {
+            closeImageModal();
+        }
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeImageModal();
+    });
+
     // --- Tab switching (selalu aktif, terlepas dari ada/tidaknya lokasi) ---
     function switchTab(key) {
         document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));

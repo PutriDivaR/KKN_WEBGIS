@@ -79,6 +79,9 @@ Route::prefix('administrator')
         Route::get('/detail-rumah-gadang', [AdminTentangController::class, 'index'])
             ->name('tentang.index');
 
+        Route::delete('/rumah/drafts/{draft}', [AdminRumahController::class, 'destroyDraft'])
+            ->name('rumah.drafts.destroy');
+
         Route::resource('rumah', AdminRumahController::class);
 
         Route::resource('fasilitas', AdminFasilitasController::class);
