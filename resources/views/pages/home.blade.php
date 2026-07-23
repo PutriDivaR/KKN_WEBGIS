@@ -189,7 +189,7 @@
     <section class="max-w-7xl mx-auto px-6 lg:px-8 pb-24">
         <div class="flex items-center justify-between mb-8">
             <h2 class="text-2xl md:text-3xl font-bold text-green-900">Galeri Terbaru</h2>
-            <a href="{{ route('fasilitas.index') }}" class="text-green-700 font-medium hover:underline">
+            <a href="{{ route('map') }}" class="text-green-700 font-medium hover:underline">
                 Lihat Semua →
             </a>
         </div>
