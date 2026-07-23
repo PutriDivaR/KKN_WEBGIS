@@ -196,13 +196,11 @@
 
         <div class="relative">
             <div id="galeri-scroll" class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                @foreach ($gallery as $photo)
+                @forelse ($gallery as $photo)
                     <figure class="shrink-0 w-52 md:w-64 snap-start">
-                        {{-- TEMPAT FILE FOTO GALERI --}}
-                        {{-- Ganti src dengan foto asli, mis: asset('images/galeri/' . Str::slug($photo['name']) . '.jpg') --}}
                         <div class="w-full h-64 rounded-xl bg-green-900/5 border border-dashed border-green-900/20 flex items-end overflow-hidden">
                             <img
-                                src=""
+                                src="{{ $photo['image'] }}"
                                 alt="{{ $photo['name'] }}"
                                 class="w-full h-full object-cover"
                                 onerror="this.style.display='none'"
@@ -210,7 +208,9 @@
                         </div>
                         <figcaption class="mt-2 text-sm text-neutral-600">{{ $photo['name'] }}</figcaption>
                     </figure>
-                @endforeach
+                @empty
+                    <p class="text-sm text-neutral-500 py-10">Belum ada foto rumah adat maupun fasilitas yang diunggah.</p>
+                @endforelse
             </div>
 
             {{-- Tombol navigasi galeri --}}
@@ -237,4 +237,4 @@
         </div>
     </section>
 
-@endsection
+@endsection 

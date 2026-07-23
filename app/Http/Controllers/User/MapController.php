@@ -21,11 +21,19 @@ class MapController extends Controller
 
     /**
      * GET /peta
-     * Daftar suku diambil dari tabel `suku` asli untuk mengisi filter sidebar.
+     * Filter suku di sidebar sekarang memakai 6 kelompok suku resmi
+     * (Suku::GROUPS), bukan lagi 14 baris mentah dari tabel `suku`.
+     * Bentuk objek (id_suku, nama_suku) sengaja dipertahankan sama seperti
+     * sebelumnya supaya blade filter tidak perlu diubah — hanya isinya
+     * yang sekarang nama kelompok, bukan id per-varian.
      */
     public function index(): View
     {
-        $sukuList = Suku::orderBy('nama_suku')->get(['id_suku', 'nama_suku']);
+        $sukuList = collect(Suku::GROUPS)->map(fn (string $group) => (object) [
+            'id_suku'   => $group,
+            'nama_suku' => $group,
+        ])->values();
+
         $kategoriFasilitasList = self::KATEGORI_FASILITAS;
 
         return view('pages.map', compact('sukuList', 'kategoriFasilitasList'));
@@ -36,7 +44,7 @@ class MapController extends Controller
      * Dipanggil lewat fetch() dari map.blade.php untuk mengisi marker Leaflet.
      * Query string yang didukung:
      *   ?status=dihuni|kosong                (single, khusus rumah adat)
-     *   ?suku[]=1&suku[]=3                   (bisa lebih dari satu — checkbox)
+     *   ?suku[]=Chaniago&suku[]=Piliang      (nama kelompok — bisa lebih dari satu)
      *   ?kategori_fasilitas[]=Pendidikan      (bisa lebih dari satu — checkbox)
      *   ?search=kata kunci                    (dipakai untuk rumah & fasilitas)
      *
@@ -64,10 +72,19 @@ class MapController extends Controller
             }
         }
 
-        // Filter suku: multi-select (checkbox). Kosong / tidak dikirim = semua suku.
-        $sukuIds = array_filter((array) $request->query('suku', []));
-        if (! empty($sukuIds)) {
-            $rumahQuery->whereIn('id_suku', $sukuIds);
+        // Filter suku: sekarang berupa nama KELOMPOK (mis. "Chaniago"), bukan
+        // id_suku mentah. Diterjemahkan dulu ke semua nama_suku asli yang
+        // termasuk kelompok itu (bisa lebih dari satu varian per kelompok)
+        // sebelum dipakai untuk query. Kosong / tidak dikirim = semua suku.
+        $sukuGroups = array_filter((array) $request->query('suku', []));
+        if (! empty($sukuGroups)) {
+            $rawNames = collect($sukuGroups)
+                ->flatMap(fn (string $group) => Suku::namesInGroup($group))
+                ->unique()
+                ->values()
+                ->all();
+
+            $rumahQuery->whereHas('suku', fn ($sq) => $sq->whereIn('nama_suku', $rawNames));
         }
 
         if ($search) {
@@ -145,4 +162,4 @@ class MapController extends Controller
             'fasilitas'  => $fasilitas->values(),
         ]);
     }
-} 
+}

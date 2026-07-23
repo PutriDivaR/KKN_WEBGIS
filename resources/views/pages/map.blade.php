@@ -46,8 +46,9 @@
         .popup-desc { margin-top: 6px; font-size: 12px; color: #57534e; line-height: 1.55; }
 
         .popup-btn {
-            display: inline-flex; align-items: center; gap: 5px; margin-top: 12px;
-            font-size: 12.5px; font-weight: 600; color: white; border: none; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 5px;
+            margin-top: 12px; font-size: 12.5px; font-weight: 600; color: #fff !important; 
+            text-decoration: none !important; border: none; cursor: pointer;
             border-radius: 9999px; padding: 7px 14px; box-shadow: 0 2px 6px rgba(0,0,0,.15);
             transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
         }

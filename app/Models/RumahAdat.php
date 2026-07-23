@@ -92,7 +92,7 @@ class RumahAdat extends Model
 
     public function getNamaTampilAttribute(): string
     {
-        return $this->nama_rumah ?: 'Rumah Gadang No. ' . ($this->nomor_rumah ?? '-');
+        return 'Rumah Gadang No. ' . ($this->nomor_rumah ?? '-');
     }
 
     public function getStatusKeyAttribute(): string
