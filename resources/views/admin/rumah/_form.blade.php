@@ -8,13 +8,12 @@
 <form
     action="{{ $action }}"
     method="POST"
-    enctype="multipart/form-data"
-    class="space-y-8">
+    enctype="multipart/form-data">
 
     @csrf
 
-    @if($method !== 'POST')
-        @method($method)
+    @if($method === 'PUT')
+        @method('PUT')
     @endif
 
     {{-- ===================== --}}
@@ -23,16 +22,12 @@
 
     <div class="bg-white rounded-3xl shadow p-6">
 
-        <h2 class="text-2xl font-bold mb-6">
-            Informasi Rumah Adat
-        </h2>
+        <h2 class="text-2xl font-bold mb-6">Informasi Rumah Adat</h2>
 
         <div class="grid md:grid-cols-2 gap-5">
 
             <div>
-                <label class="font-semibold">
-                    Nama Rumah
-                </label>
+                <label class="font-semibold">Nama Rumah</label>
 
                 <input
                     type="text"
@@ -43,9 +38,7 @@
             </div>
 
             <div>
-                <label class="font-semibold">
-                    Jorong
-                </label>
+                <label class="font-semibold">Jorong</label>
 
                 <select
                     name="jorong_id"
@@ -73,18 +66,14 @@
 
             <div>
 
-                <label class="font-semibold">
-                    Suku
-                </label>
+                <label class="font-semibold">Suku</label>
 
                 <select
                     name="suku_id"
                     class="{{ $inputClass }}"
                     required>
 
-                    <option value="">
-                        Pilih Suku
-                    </option>
+                    <option value="">Pilih Suku</option>
 
                     @foreach($sukuList as $suku)
 
@@ -104,9 +93,7 @@
 
             <div>
 
-                <label class="font-semibold">
-                    Status
-                </label>
+                <label class="font-semibold">Status</label>
 
                 <select
                     name="status_id"
@@ -131,9 +118,7 @@
 
             <div>
 
-                <label class="font-semibold">
-                    Tahun Dibangun
-                </label>
+                <label class="font-semibold">Tahun Dibangun</label>
 
                 <input
                     type="text"
@@ -147,9 +132,7 @@
 
         <div class="mt-5">
 
-            <label class="font-semibold">
-                Alamat
-            </label>
+            <label class="font-semibold">Alamat</label>
 
             <textarea
                 name="alamat"
@@ -166,48 +149,32 @@
 
     <div class="bg-white rounded-3xl shadow p-6">
 
-        <h2 class="text-2xl font-bold mb-6">
-
-            Lokasi Rumah
-
-        </h2>
+        <h2 class="text-2xl font-bold mb-6">Lokasi Rumah</h2>
 
         <div class="grid md:grid-cols-2 gap-5">
 
             <div>
 
-                <label class="font-semibold">
-
-                    Latitude
-
-                </label>
+                <label class="font-semibold">Latitude</label>
 
                 <input
                     type="text"
                     name="latitude"
                     class="{{ $inputClass }}"
                     value="{{ old('latitude',$form['latitude'] ?? '') }}">
-
             </div>
 
             <div>
 
-                <label class="font-semibold">
-
-                    Longitude
-
-                </label>
+                <label class="font-semibold">Longitude</label>
 
                 <input
                     type="text"
                     name="longitude"
                     class="{{ $inputClass }}"
                     value="{{ old('longitude',$form['longitude'] ?? '') }}">
-
             </div>
-
         </div>
-
     </div>
 
     {{-- ===================== --}}
@@ -217,9 +184,7 @@
     <div class="bg-white rounded-3xl shadow p-6">
 
         <h2 class="text-2xl font-bold mb-6">
-
             Sejarah Rumah Adat
-
         </h2>
 
         <textarea
@@ -242,12 +207,8 @@
 
             <label
                 for="galeri_files"
-                class="cursor-pointer bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-xl">
-
-                + Tambah Foto
-
+                class="cursor-pointer bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-xl"> + Tambah Foto
             </label>
-
         </div>
 
         <input
@@ -261,7 +222,6 @@
         <div
             id="galleryPreview"
             class="grid md:grid-cols-4 gap-4">
-
         </div>
 
     </div>
@@ -273,21 +233,11 @@
 
     <div class="bg-white rounded-3xl shadow p-6">
 
-        <h2 class="text-2xl font-bold mb-6">
-
-            Video Rumah Adat
-
-        </h2>
-
+        <h2 class="text-2xl font-bold mb-6"> Video Rumah Adat </h2>
         <div class="grid md:grid-cols-2 gap-6">
 
             <div>
-
-                <label class="font-semibold">
-
-                    Judul Video
-
-                </label>
+                <label class="font-semibold">Judul Video </label>
 
                 <input
                     type="text"
@@ -299,11 +249,7 @@
 
             <div>
 
-                <label class="font-semibold">
-
-                    Upload Video
-
-                </label>
+                <label class="font-semibold">Upload Video </label>
 
                 <input
                     id="video_file"
@@ -340,51 +286,33 @@
     <div class="flex justify-between">
 
         <a
-
             href="{{ route('admin.rumah.index') }}"
-
             class="px-6 py-3 rounded-xl border">
-
             Batal
-
         </a>
 
         <button
-
             type="submit"
-
             class="px-8 py-3 rounded-xl bg-green-700 hover:bg-green-800 text-white">
-
             {{ $mode == 'edit' ? 'Update Rumah Adat' : 'Simpan Rumah Adat' }}
-
         </button>
 
     </div>
-
 </form>
 
 	@push('scripts')
 
 	<script>
-
 		const galleryInput=document.getElementById('galeri_files');
-
 		const galleryPreview=document.getElementById('galleryPreview');
 
 		if(galleryInput){
-
 		galleryInput.addEventListener('change',function(){
-
 		galleryPreview.innerHTML='';
-
 		[...this.files].forEach(file=>{
-
 		const reader=new FileReader();
-
 		reader.onload=function(e){
-
 		galleryPreview.innerHTML+=`
-
 		<div class="rounded-xl overflow-hidden border">
 
 		<img
@@ -395,8 +323,7 @@
 
 		${file.name}
 
-		</div>
-
+			</div>
 		</div>
 
 		`;
@@ -412,19 +339,14 @@
 		}
 
 		const videoInput=document.getElementById('video_file');
-
 		const videoPreview=document.getElementById('videoPreview');
 
 		if(videoInput){
-
 		videoInput.addEventListener('change',function(){
-
 		const file=this.files[0];
-
+		
 		if(!file)return;
-
 		videoPreview.src=URL.createObjectURL(file);
-
 		videoPreview.classList.remove('hidden');
 
 		});
@@ -433,4 +355,5 @@
 
 	</script>
 
-@endpush
+	@endpush
+</form>

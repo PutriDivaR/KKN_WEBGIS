@@ -122,6 +122,20 @@ class AdminRumahController extends Controller
     ]);
 }
 
+	public function show(string $rumah): View
+	{
+		$rumah = RumahAdat::with([
+			'suku',
+			'jorong',
+			'sejarah',
+			'media',
+		])->findOrFail($rumah);
+
+		return view('admin.rumah.show', [
+			'rumah' => $rumah,
+		]);
+	}
+
 	public function update(Request $request,string $rumah): RedirectResponse
 	{
 		$validated=$this->validateForm($request);
